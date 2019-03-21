@@ -20,12 +20,16 @@ export class CustomGraphService implements ICustomGraphService {
 
             this._msGraphClientFactory.getClient().then((client: MSGraphClient) => {
                 this._msGraphClient = client;
+
+                this._msGraphClient.api('/me').get((error, user: any, rawResponse?: any) => {
+                    console.log(user);
+                });;
             });
         });
     }
 
     public executeMyRequest(): void {
-        this._msGraphClient.api('/me');
+       // this._msGraphClient.api('/me');
     }
 
 }

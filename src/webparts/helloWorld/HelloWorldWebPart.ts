@@ -9,30 +9,41 @@ import { escape } from '@microsoft/sp-lodash-subset';
 import styles from './HelloWorldWebPart.module.scss';
 import * as strings from 'HelloWorldWebPartStrings';
 
+import { ICustomGraphService, CustomGraphService } from '../../services';
+
 export interface IHelloWorldWebPartProps {
   description: string;
 }
 
 export default class HelloWorldWebPart extends BaseClientSideWebPart<IHelloWorldWebPartProps> {
 
+  private _customGraphServiceInstance: ICustomGraphService;
+
   public render(): void {
     this.domElement.innerHTML = `
-      <div class="${ styles.helloWorld }">
-        <div class="${ styles.container }">
-          <div class="${ styles.row }">
-            <div class="${ styles.column }">
-              <span class="${ styles.title }">Welcome to SharePoint!</span>
-              <p class="${ styles.subTitle }">Customize SharePoint experiences using Web Parts.</p>
-              <p class="${ styles.description }">${escape(this.properties.description)}</p>
-              <a href="https://aka.ms/spfx" class="${ styles.button }">
-                <span class="${ styles.label }">Learn more</span>
+      <div class="${ styles.helloWorld}">
+        <div class="${ styles.container}">
+          <div class="${ styles.row}">
+            <div class="${ styles.column}">
+              <span class="${ styles.title}">Welcome to SharePoint!</span>
+              <p class="${ styles.subTitle}">Customize SharePoint experiences using Web Parts.</p>
+              <p class="${ styles.description}">${escape(this.properties.description)}</p>
+              <a href="https://aka.ms/spfx" class="${ styles.button}">
+                <span class="${ styles.label}">Learn more</span>
               </a>
             </div>
           </div>
         </div>
       </div>`;
+
+    this._customGraphServiceInstance = this.context.serviceScope.consume(CustomGraphService.serviceKey);
+
+    this.getData();
   }
 
+  private async getData() {
+    await this._customGraphServiceInstance.executeMyRequest();
+  }
   protected get dataVersion(): Version {
     return Version.parse('1.0');
   }

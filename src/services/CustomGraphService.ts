@@ -23,7 +23,7 @@ export class CustomGraphService implements ICustomGraphService {
 
                 this._msGraphClient.api('/me').get((error, user: any, rawResponse?: any) => {
                     console.log(user);
-                });;
+                });
             });
         });
     }

@@ -19,12 +19,11 @@ export class CustomGraphService implements ICustomGraphService {
     }
 
     public getMyDetails(): Promise<JSON> {
-        return this._msGraphClientFactory.getClient().then((_msGraphClient: MSGraphClient) => {
-            return _msGraphClient.api('/me').get((error, user: JSON, rawResponse?: any) => {
-                // return new Promise<JSON>((resolve, reject) => {
-                //     resolve(user);
-                // });
-                console.log(user);
+        return new Promise<JSON>((resolve, reject) => {
+            this._msGraphClientFactory.getClient().then((_msGraphClient: MSGraphClient) => {
+                _msGraphClient.api('/me').get((error, user: JSON, rawResponse?: any) => {
+                    resolve(user);
+                });
             });
         });
     }

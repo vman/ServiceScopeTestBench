@@ -21,6 +21,8 @@ export class CustomService implements ICustomService {
     public executeMyRequest(): Promise<JSON> {
         //You can add your own AAD resource here. Using the Graph API resource for simplicity.
         return this._aadHttpClientFactory.getClient("https://graph.microsoft.com").then((_aadHttpClient: AadHttpClient) => {
+
+            //This would be your custom endpoint
             return _aadHttpClient.get('https://graph.microsoft.com/v1.0/me', AadHttpClient.configurations.v1).then((response: HttpClientResponse) => {
                 return response.json();
             });

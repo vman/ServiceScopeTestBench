@@ -18,6 +18,7 @@ export class CustomSPService implements ICustomSPService {
     constructor(serviceScope: ServiceScope) {
         serviceScope.whenFinished(() => {
             this._spHttpClient = serviceScope.consume(SPHttpClient.serviceKey);
+
             this._pageContext = serviceScope.consume(PageContext.serviceKey);
             this._currentWebUrl = this._pageContext.web.absoluteUrl;
         });

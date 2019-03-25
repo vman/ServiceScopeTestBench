@@ -2,34 +2,30 @@ import { ServiceKey, ServiceScope } from '@microsoft/sp-core-library';
 import { MSGraphClientFactory, MSGraphClient } from '@microsoft/sp-http';
 
 export interface ICustomGraphService {
-    executeMyRequest(): void;
+    getMyDetails(): Promise<JSON>;
 }
 
 export class CustomGraphService implements ICustomGraphService {
 
     public static readonly serviceKey: ServiceKey<ICustomGraphService> =
-        ServiceKey.create<ICustomGraphService>('vrd:ICustomGraphService', CustomGraphService);
-    
+        ServiceKey.create<ICustomGraphService>('my-custom-app:ICustomGraphService', CustomGraphService);
+
     private _msGraphClientFactory: MSGraphClientFactory;
-    private _msGraphClient: MSGraphClient;
 
     constructor(serviceScope: ServiceScope) {
         serviceScope.whenFinished(() => {
-
-            this._msGraphClientFactory = serviceScope.consume(MSGraphClientFactory.serviceKey)
-
-            this._msGraphClientFactory.getClient().then((client: MSGraphClient) => {
-                this._msGraphClient = client;
-
-                this._msGraphClient.api('/me').get((error, user: any, rawResponse?: any) => {
-                    console.log(user);
-                });
-            });
+            this._msGraphClientFactory = serviceScope.consume(MSGraphClientFactory.serviceKey);
         });
     }
 
-    public executeMyRequest(): void {
-       // this._msGraphClient.api('/me');
+    public getMyDetails(): Promise<JSON> {
+        return this._msGraphClientFactory.getClient().then((_msGraphClient: MSGraphClient) => {
+            return _msGraphClient.api('/me').get((error, user: JSON, rawResponse?: any) => {
+                // return new Promise<JSON>((resolve, reject) => {
+                //     resolve(user);
+                // });
+                console.log(user);
+            });
+        });
     }
-
 }

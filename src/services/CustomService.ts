@@ -1,31 +1,30 @@
 import { ServiceKey, ServiceScope } from '@microsoft/sp-core-library';
-import { AadHttpClientFactory, AadHttpClient } from '@microsoft/sp-http';
+import { AadHttpClientFactory, AadHttpClient, HttpClientResponse } from '@microsoft/sp-http';
 
 export interface ICustomService {
-    executeMyRequest(): void;
+    executeMyRequest(): Promise<JSON>;
 }
 
 export class CustomService implements ICustomService {
 
     public static readonly serviceKey: ServiceKey<ICustomService> =
-        ServiceKey.create<ICustomService>('vrd:ICustomService', CustomService);
-    
+        ServiceKey.create<ICustomService>('my-custom-app:ICustomService', CustomService);
+
     private _aadHttpClientFactory: AadHttpClientFactory;
-    private _aadHttpClient: AadHttpClient;
 
     constructor(serviceScope: ServiceScope) {
         serviceScope.whenFinished(() => {
-
-            this._aadHttpClientFactory = serviceScope.consume(AadHttpClientFactory.serviceKey)
-
-            this._aadHttpClientFactory.getClient("https://tenant.onmicrosoft.com/6b347c27-f360-47ac-b4d4-af78d0da4223").then((client: AadHttpClient) => {
-                this._aadHttpClient = client;
-            });
+            this._aadHttpClientFactory = serviceScope.consume(AadHttpClientFactory.serviceKey);
         });
     }
 
-    public executeMyRequest(): void {
-        this._aadHttpClient.get('https://myfunction.azurewebsites.net/api/CurrentUser', AadHttpClient.configurations.v1);
+    public executeMyRequest(): Promise<JSON> {
+        //You can add your own AAD resource here. Using the Graph API resource for simplicity.
+        return this._aadHttpClientFactory.getClient("https://graph.microsoft.com").then((_aadHttpClient: AadHttpClient) => {
+            return _aadHttpClient.get('https://graph.microsoft.com/v1.0/me', AadHttpClient.configurations.v1).then((response: HttpClientResponse) => {
+                return response.json();
+            });
+        });
     }
 
 }

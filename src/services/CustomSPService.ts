@@ -1,25 +1,32 @@
 import { ServiceKey, ServiceScope } from '@microsoft/sp-core-library';
-import { SPHttpClient } from '@microsoft/sp-http';
+import { SPHttpClient, SPHttpClientResponse } from '@microsoft/sp-http';
+import { PageContext } from '@microsoft/sp-page-context';
 
-export interface ICustomGraphService {
-    executeMyRequest(): void;
+export interface ICustomSPService {
+    getWebDetails(): Promise<JSON>;
 }
 
-export class CustomGraphService implements ICustomGraphService {
+export class CustomSPService implements ICustomSPService {
 
-    public static readonly serviceKey: ServiceKey<ICustomGraphService> =
-        ServiceKey.create<ICustomGraphService>('vrd:ICustomGraphService', CustomGraphService);
-    
+    public static readonly serviceKey: ServiceKey<ICustomSPService> =
+        ServiceKey.create<CustomSPService>('my-custom-app:ICustomSPService', CustomSPService);
+
     private _spHttpClient: SPHttpClient;
+    private _pageContext: PageContext;
+    private _currentWebUrl: string;
 
     constructor(serviceScope: ServiceScope) {
         serviceScope.whenFinished(() => {
-            this._spHttpClient = serviceScope.consume(SPHttpClient.serviceKey)
+            this._spHttpClient = serviceScope.consume(SPHttpClient.serviceKey);
+            this._pageContext = serviceScope.consume(PageContext.serviceKey);
+            this._currentWebUrl = this._pageContext.web.absoluteUrl;
         });
     }
 
-    public executeMyRequest(): void {
-        this._spHttpClient.get("", SPHttpClient.configurations.v1);
+    public getWebDetails(): Promise<JSON> {
+        return this._spHttpClient.get(`${this._currentWebUrl}/_api/web`, SPHttpClient.configurations.v1).then((response: SPHttpClientResponse) => {
+            return response.json();
+        });
     }
 
 }

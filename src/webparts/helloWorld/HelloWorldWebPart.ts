@@ -4,12 +4,18 @@ import {
   IPropertyPaneConfiguration,
   PropertyPaneTextField
 } from '@microsoft/sp-property-pane';
-import { escape } from '@microsoft/sp-lodash-subset';
 
 import styles from './HelloWorldWebPart.module.scss';
 import * as strings from 'HelloWorldWebPartStrings';
 
-import { ICustomGraphService, CustomGraphService } from '../../services';
+import { 
+  ICustomGraphService,
+  CustomGraphService,
+  ICustomService,
+  CustomService,
+  ICustomSPService,
+  CustomSPService
+ } from '../../services';
 
 export interface IHelloWorldWebPartProps {
   description: string;
@@ -18,32 +24,42 @@ export interface IHelloWorldWebPartProps {
 export default class HelloWorldWebPart extends BaseClientSideWebPart<IHelloWorldWebPartProps> {
 
   private _customGraphServiceInstance: ICustomGraphService;
+  private _customServiceInstance: ICustomService;
+  private _customSPServiceInstance: ICustomSPService;
 
   public render(): void {
     this.domElement.innerHTML = `
-      <div class="${ styles.helloWorld}">
+      <div class="${styles.helloWorld}">
         <div class="${ styles.container}">
-          <div class="${ styles.row}">
-            <div class="${ styles.column}">
-              <span class="${ styles.title}">Welcome to SharePoint!</span>
-              <p class="${ styles.subTitle}">Customize SharePoint experiences using Web Parts.</p>
-              <p class="${ styles.description}">${escape(this.properties.description)}</p>
-              <a href="https://aka.ms/spfx" class="${ styles.button}">
-                <span class="${ styles.label}">Learn more</span>
-              </a>
+            <div class="${ styles.row}">
+              <div class="${ styles.column}">
+                <span class="${styles.label}">Consume MSGraphClient, AadHttpClient and SPHttpClient 
+                thorough custom services without passing in SPFx component context.</span>
+              </div>
             </div>
           </div>
-        </div>
       </div>`;
 
+    //MSGraphClient
     this._customGraphServiceInstance = this.context.serviceScope.consume(CustomGraphService.serviceKey);
+    this._customGraphServiceInstance.getMyDetails().then((user: JSON)=>{
+      console.log(user);
+    });
 
-    this.getData();
+    //AadHttpClient
+    this._customServiceInstance = this.context.serviceScope.consume(CustomService.serviceKey);
+    this._customServiceInstance.executeMyRequest().then((user: JSON)=>{
+      console.log(user);
+    });
+
+    //SPHttpClient
+    this._customSPServiceInstance = this.context.serviceScope.consume(CustomSPService.serviceKey);
+    this._customSPServiceInstance.getWebDetails().then((web: JSON)=>{
+      console.log(web);
+    });
   }
 
-  private async getData() {
-    await this._customGraphServiceInstance.executeMyRequest();
-  }
+
   protected get dataVersion(): Version {
     return Version.parse('1.0');
   }

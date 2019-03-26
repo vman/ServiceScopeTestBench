@@ -29,5 +29,4 @@ export class CustomSPService implements ICustomSPService {
             return response.json();
         });
     }
-
 }

@@ -9,11 +9,8 @@ import styles from './HelloWorldWebPart.module.scss';
 import * as strings from 'HelloWorldWebPartStrings';
 
 import {
-  ICustomGraphService,
   CustomGraphService,
-  ICustomService,
   CustomService,
-  ICustomSPService,
   CustomSPService
 } from '../../services';
 
@@ -22,10 +19,6 @@ export interface IHelloWorldWebPartProps {
 }
 
 export default class HelloWorldWebPart extends BaseClientSideWebPart<IHelloWorldWebPartProps> {
-
-  private _customGraphServiceInstance: ICustomGraphService;
-  private _customServiceInstance: ICustomService;
-  private _customSPServiceInstance: ICustomSPService;
 
   public render(): void {
     this.domElement.innerHTML = `
@@ -53,27 +46,21 @@ export default class HelloWorldWebPart extends BaseClientSideWebPart<IHelloWorld
       </div>`;
 
     //MSGraphClient
-    this._customGraphServiceInstance = this.context.serviceScope.consume(CustomGraphService.serviceKey);
-    this._customGraphServiceInstance.getMyDetails().then((user: JSON) => {
-
+    const _customGraphServiceInstance = this.context.serviceScope.consume(CustomGraphService.serviceKey);
+    _customGraphServiceInstance.getMyDetails().then((user: JSON) => {
       document.getElementById("graphResultContainer").innerText = JSON.stringify(user);
-
     });
 
     //AadHttpClient
-    this._customServiceInstance = this.context.serviceScope.consume(CustomService.serviceKey);
-    this._customServiceInstance.executeMyRequest().then((user: JSON) => {
-
+    const _customServiceInstance = this.context.serviceScope.consume(CustomService.serviceKey);
+    _customServiceInstance.executeMyRequest().then((user: JSON) => {
       document.getElementById("aadClientResultContainer").innerText = JSON.stringify(user);
-
     });
 
     //SPHttpClient
-    this._customSPServiceInstance = this.context.serviceScope.consume(CustomSPService.serviceKey);
-    this._customSPServiceInstance.getWebDetails().then((web: JSON) => {
-
+    const _customSPServiceInstance = this.context.serviceScope.consume(CustomSPService.serviceKey);
+    _customSPServiceInstance.getWebDetails().then((web: JSON) => {
       document.getElementById("spClientResultContainer").innerText = JSON.stringify(web);
-
     });
   }
 

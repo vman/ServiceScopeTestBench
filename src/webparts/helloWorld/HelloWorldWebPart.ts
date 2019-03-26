@@ -27,19 +27,19 @@ export default class HelloWorldWebPart extends BaseClientSideWebPart<IHelloWorld
             <div class="${styles.row}">
               <div class="${ styles.column}">
                 <span class="${styles.title}">Consuming MSGraphClient, AadHttpClient and SPHttpClient 
-                through custom services without passing in SPFx component context.</span>
+                through custom services without passing SPFx webpart context.</span>
               </div>
             </div>
             <div class="${styles.row}">
-              <span class="${styles.title}">MSGraphClient result:</span>
+              <span class="${styles.subTitle}">MSGraphClient result:</span>
               <div id="graphResultContainer"></div>
             </div>
             <div class="${styles.row}">
-              <span class="${styles.title}">AadHttpClient result:</span>
+              <span class="${styles.subTitle}">AadHttpClient result:</span>
               <div id="aadClientResultContainer"></div>
             </div>
             <div class="${styles.row}">
-              <span class="${styles.title}">SPHttpClient result:</span>
+              <span class="${styles.subTitle}">SPHttpClient result:</span>
               <div id="spClientResultContainer"></div>
             </div>
           </div>
